@@ -39,7 +39,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Run Interior Designer Agent initializer
+      - name: Run Interior Designer Agent initializer 
         run: |
+          cd src
           python app/agents/interiorDesignAgent_initializer.py
   

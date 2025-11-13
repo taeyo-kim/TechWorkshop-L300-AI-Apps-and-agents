@@ -39,7 +39,7 @@ jobs:
         with:
             creds: $
 
-      - name: Run customer loyalty agent initializer
+      - name: Run Inventory Agent initializer
         run: |
           cd app/
-          python app/agents/customerLoyaltyAgent_initializer.py
+          python app/agents/inventoryAgent_initializer.py

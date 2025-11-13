@@ -1,0 +1,51 @@
+name: Run Inventory Agent Initializer
+
+on:
+  push:
+    paths:
+      - 'src/app/agents/inventoryAgent_initializer.py'
+      - 'src/prompts/InventoryAgentPrompt.txt'
+      - 'src/app/tools/inventoryCheck.py'
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install azure-ai-projects azure-identity azure-ai-agents python-dotenv
+          pip install pyodbc sqlalchemy pandas openai
+          pip install opentelemetry-api azure-monitor-opentelemetry opentelemetry-instrumentation-openai-v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run Customer Loyalty Agent Initializer
+        env:
+          AZURE_AI_AGENT_ENDPOINT: ${{ secrets.AZURE_AI_AGENT_ENDPOINT }}
+          AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME: ${{ secrets.AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME }}
+          APPLICATIONINSIGHTS_CONNECTION_STRING: ${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          gpt_deployment: ${{ secrets.gpt_deployment }}
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+        run: |
+          cd src/app/agents
+          python inventoryAgent_initializer.py

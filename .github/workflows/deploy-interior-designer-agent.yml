@@ -39,7 +39,7 @@ jobs:
         with:
             creds: $
 
-      - name: Run interior designer agent initializer
+      - name: Run Interior Designer Agent initializer
         run: |
           cd app/
           python app/agents/interiorDesignAgent_initializer.py

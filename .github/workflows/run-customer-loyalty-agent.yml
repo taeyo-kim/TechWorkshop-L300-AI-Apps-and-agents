@@ -37,7 +37,7 @@ jobs:
       - name: Login via Azure CLI
         uses: azure/login@v2.1.1
         with:
-            creds: $
+            creds: $AZURE_CREDENTIALS
 
       - name: Run Customer Loyalty Agent initializer
         run: |

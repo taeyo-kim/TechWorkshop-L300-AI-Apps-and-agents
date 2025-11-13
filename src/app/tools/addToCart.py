@@ -24,7 +24,7 @@ client = AzureOpenAI(
 
 # Load the prompt for cart addition task from file
 SR_PROMPT_TARGET = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'prompts', 'addToCartPrompt.txt')
-with open(SR_PROMPT_TARGET, 'r') as file:
+with open(SR_PROMPT_TARGET, 'r', encoding='utf-8') as file:
     PROMPT = file.read()
 
 def add_products_to_cart(question, product_list):

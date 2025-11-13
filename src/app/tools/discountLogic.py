@@ -15,12 +15,13 @@ from opentelemetry import trace
 from azure.monitor.opentelemetry import configure_azure_monitor
 from azure.ai.agents.telemetry import trace_function
 import time
-# from opentelemetry.instrumentation.openai_v2 import OpenAIInstrumentor
+from opentelemetry.instrumentation.openai_v2 import OpenAIInstrumentor
 
 # Enable Azure Monitor tracing
 application_insights_connection_string = os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"]
 configure_azure_monitor(connection_string=application_insights_connection_string)
-# OpenAIInstrumentor().instrument()
+OpenAIInstrumentor().instrument()
+os.environ["AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED"] = "true"
 
 # scenario = os.path.basename(__file__)
 # tracer = trace.get_tracer(__name__)
@@ -33,7 +34,7 @@ api_key = os.getenv("AZURE_OPENAI_KEY")
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(current_dir))  # Go up 2 levels from src/tools/ to root
 PROMPT_PATH = os.path.join(project_root, 'prompts', 'DiscountLogicPrompt.txt')
-with open(PROMPT_PATH, 'r') as file:
+with open(PROMPT_PATH, 'r', encoding='utf-8') as file:
     PROMPT = file.read()
 
 @trace_function()

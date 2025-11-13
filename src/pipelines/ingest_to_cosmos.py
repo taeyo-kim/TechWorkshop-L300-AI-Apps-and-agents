@@ -27,7 +27,7 @@ df['content_for_vector'] = (
 
 # 2. Connect to Cosmos DB
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 
 def get_cosmos_client(endpoint: str | None, key: str | None = None):
@@ -39,7 +39,7 @@ def get_cosmos_client(endpoint: str | None, key: str | None = None):
     if not endpoint:
         raise ValueError("COSMOS_ENDPOINT must be provided in environment variables")
 
-    # Try AAD first
+    # Try AAD first (this is required if local auth is disabled on Cosmos DB)
     try:
         logger.info("Attempting to authenticate to Cosmos DB using DefaultAzureCredential (AAD)...")
         credential = DefaultAzureCredential()
@@ -48,22 +48,33 @@ def get_cosmos_client(endpoint: str | None, key: str | None = None):
         # perform a light operation to validate the credential (will raise if unauthorized)
         # Using read_account or listing databases is a small call; here we try to list databases.
         _ = list(client.list_databases())
-        logger.info("Authenticated to Cosmos DB with DefaultAzureCredential.")
+        logger.info("✓ Authenticated to Cosmos DB with DefaultAzureCredential (AAD).")
         return client
-    except AzureError as ex:
-        logger.warning("AAD authentication failed: %s", ex)
+    except Exception as ex:
+        logger.warning(f"AAD authentication failed: {type(ex).__name__}: {ex}")
+        
+        # Check if it's an "Unauthorized" error indicating local auth is disabled
+        if "Unauthorized" in str(ex) and "Local Authorization is disabled" in str(ex):
+            logger.error("Local Authorization is disabled on this Cosmos DB account.")
+            logger.error("You must authenticate using Azure AD (DefaultAzureCredential).")
+            logger.error("Please ensure you are logged in: Run 'az login' in your terminal.")
+            raise RuntimeError(
+                "Cosmos DB requires Azure AD authentication. "
+                "Local key-based authentication is disabled. "
+                "Please run 'az login' to authenticate."
+            ) from ex
 
-    # Fallback to key
+    # Fallback to key (only if AAD failed for other reasons)
     if key:
         try:
             logger.info("Falling back to endpoint + key authentication for Cosmos DB...")
-            client = CosmosClient(endpoint, key)
+            client = CosmosClient(endpoint, credential=key)
             # validate key by a light operation
             _ = list(client.list_databases())
-            logger.info("Authenticated to Cosmos DB with endpoint+key.")
+            logger.info("✓ Authenticated to Cosmos DB with endpoint+key.")
             return client
         except Exception as ex:
-            logger.error("Endpoint+key authentication failed: %s", ex)
+            logger.error(f"Endpoint+key authentication failed: {type(ex).__name__}: {ex}")
             raise
 
     # If we reach here, both auth methods failed or no key provided

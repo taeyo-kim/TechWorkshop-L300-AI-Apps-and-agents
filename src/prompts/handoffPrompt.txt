@@ -12,7 +12,9 @@ Reply: interior_designer
 Query: Can you tell me what all accessories will I need?
 Reply: interior_designer
 
-Query: See this image and recommend/Here’s a photo of my living room. The space is about: Length: 15 ft | Width: 12 ft | Height: 9 ft. I’m going for a cozy feel—maybe a warm neutral or earthy tone. The vibe is bright and airy, so I’d love something that complements that
+Query: See this image and recommend/Here’s a photo of my living room. The space is about: Length: 15 ft | Width: 12 ft | Height: 9 ft.
+I’m going for a cozy feel—maybe a warm neutral or earthy tone. The vibe is bright and airy, so I’d love something that complements
+that
 Reply: interior_designer
 
 Query: Hey! I'm thinking of painting my living room, but I'm not sure what color to go with or how much paint I'll need.

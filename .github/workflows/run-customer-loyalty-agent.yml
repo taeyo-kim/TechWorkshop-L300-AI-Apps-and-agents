@@ -24,6 +24,11 @@ jobs:
         env:
           ENV: ${{ secrets.ENV_FILE }}  
 
+      - name: Login via Azure CLI
+        uses: azure/login@v2.1.1
+        with:
+            auth-type: IDENTITY
+            
       - name: Set up Python 
         uses: actions/setup-python@v5
         with:
@@ -33,11 +38,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r src/requirements.txt
-
-      - name: Login via Azure CLI
-        uses: azure/login@v2.1.1
-        with:
-            creds: $AZURE_CREDENTIALS
 
       - name: Run Customer Loyalty Agent initializer
         run: |

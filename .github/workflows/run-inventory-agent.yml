@@ -22,7 +22,7 @@ jobs:
         run: 'echo "$ENV" > src/.env'
         shell: bash
         env:
-          ENV: $
+          ENV: ${{ secrets.ENV_FILE }} 
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,7 +37,7 @@ jobs:
       - name: Login via Azure CLI
         uses: azure/login@v2.1.1
         with:
-            creds: $
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Run Inventory Agent initializer
         run: |

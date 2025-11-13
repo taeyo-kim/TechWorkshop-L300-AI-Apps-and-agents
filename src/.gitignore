@@ -53,5 +53,3 @@ out/
 .azure-pipelines.yml
 *.azuredevops
 
-# Github
-.github/
